@@ -11,13 +11,11 @@
         // LAYER 1: THE LAUNCHER
         // ==========================================
 
-        // 1. Capture the hash from the current URL (removing the # symbol)
         const currentPayload = window.location.hash.substring(1);
 
-        // 2. Define the Gatekeeper Logic
-        // We split the script tags to prevent the browser parser from closing the main script early.
-        const scriptOpen = "<" + "script>";
-        const scriptClose = "<" + "/script>";
+        // Note: We use <\/ to escape all closing tags in the string below.
+        // For the nested script tag inside the encoder tool, we use <\\/script> 
+        // to ensure it survives the second layer of parsing.
 
         const gatekeeperSource = `
 <!DOCTYPE html>
@@ -26,10 +24,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NextVG Secure Gate</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https:\/\/fonts.googleapis.com">
+    <link rel="preconnect" href="https:\/\/fonts.gstatic.com" crossorigin>
+    <link href="https:\/\/fonts.googleapis.com\/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
+    <link href="https:\/\/fonts.googleapis.com\/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             background-color: #000;
@@ -108,22 +106,20 @@
             50% { text-shadow: -3px -3px 0px #400; opacity: 0.8; }
             100% { text-shadow: 3px -3px 0px #400; opacity: 1; }
         }
-    </style>
-</head>
+    <\/style>
+<\/head>
 <body>
 
     <div id="mymodal">
         <h1>NextVG Alert</h1>
-        <p>:: ENCRYPTED PAYLOAD DETECTED ::<br>ENTER NEXTKEY TO DECRYPT</p>
+        <p>:: ENCRYPTED PAYLOAD DETECTED ::<br>ENTER NEXTKEY TO DECRYPT<\/p>
         <input type="text" id="pass" placeholder="xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off">
         <br>
-        <button onclick="attemptEntry()">Unlock</button>
-    </div>
+        <button onclick="attemptEntry()">Unlock<\/button>
+    <\/div>
 
-    ${scriptOpen}
-        // --- CONFIGURATION ---
+    <script>
         const PAYLOAD_HASH = "${currentPayload}"; 
-        
         const KEY_USER = "8B29-X7qR-11mZ-vW90-J33kL5oP";
         const KEY_ADMIN = "8B29-X7qR-11mZ-vW90-J33kL5oP-encoder";
 
@@ -165,8 +161,6 @@
             return decodeURIComponent(decodedB64);
         }
 
-        // --- LAUNCHERS ---
-
         function launchViewer(targetSrc) {
             const html = \`
                 <!DOCTYPE html>
@@ -175,9 +169,9 @@
                     <iframe src="\${targetSrc}" 
                         style="border:none; width:100vw; height:100vh; display:block;" 
                         allowfullscreen>
-                    </iframe>
-                </body>
-                </html>
+                    <\/iframe>
+                <\/body>
+                <\/html>
             \`;
             replacePage(html);
         }
@@ -187,8 +181,8 @@
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>ACCESS DENIED</title>
-                    <link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
+                    <title>ACCESS DENIED<\/title>
+                    <link href="https:\/\/fonts.googleapis.com\/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
                     <style>
                         body {
                             background: #000;
@@ -212,26 +206,25 @@
                             75% { transform: translate(3px, 2px) rotate(0deg); }
                             100% { transform: translate(1px, -1px) rotate(1deg); }
                         }
-                    </style>
-                </head>
+                    <\/style>
+                <\/head>
                 <body>
                     <div>
                         Access Denied: illegal action: form connection to NextVG server with no NextKey
-                    </div>
-                </body>
-                </html>
+                    <\/div>
+                <\/body>
+                <\/html>
             \`;
             replacePage(html);
         }
 
         function launchEncoderTool() {
-            // NOTE: We use split strings here too to avoid parser issues
             const html = \`
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>NextVG Encoder</title>
-                    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+                    <title>NextVG Encoder<\/title>
+                    <link href="https:\/\/fonts.googleapis.com\/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
                     <style>
                         body { background: #111; color: #0f0; font-family: 'Courier Prime', monospace; padding: 20px; }
                         h2 { border-bottom: 1px solid #0f0; padding-bottom: 10px; }
@@ -249,27 +242,27 @@
                             background: #000; border: 1px dashed #0f0; padding: 15px; margin-top: 20px;
                             word-break: break-all; min-height: 50px;
                         }
-                    </style>
-                </head>
+                    <\/style>
+                <\/head>
                 <body>
                     <div class="container">
-                        <h2>NextVG Payload Encoder</h2>
+                        <h2>NextVG Payload Encoder<\/h2>
                         
-                        <p><strong>Option 1: Encrypt a Link/Text</strong></p>
+                        <p><strong>Option 1: Encrypt a Link/Text<\/strong><\/p>
                         <input type="text" id="rawInput" placeholder="https://example.com">
                         
-                        <p><strong>Option 2: Encrypt an Image (Base64)</strong></p>
+                        <p><strong>Option 2: Encrypt an Image (Base64)<\/strong><\/p>
                         <input type="file" id="fileInput" accept="image/*">
 
                         <br><br>
-                        <button onclick="process()">ENCRYPT & GENERATE</button>
+                        <button onclick="process()">ENCRYPT & GENERATE<\/button>
 
-                        <h3>Encrypted Result (Hash):</h3>
-                        <div class="output-box" id="output"></div>
-                        <p style="color:#666; font-size:0.8rem;">Copy the text above and append it to your URL after #</p>
-                    </div>
+                        <h3>Encrypted Result (Hash):<\/h3>
+                        <div class="output-box" id="output"><\/div>
+                        <p style="color:#666; font-size:0.8rem;">Copy the text above and append it to your URL after #<\/p>
+                    <\/div>
 
-                    ${scriptOpen}
+                    <script>
                         const REPLACEMENTS = [
                             { char: "A", code: "%̴̶̵̖̗̙̔̄̔̔́̂̃̅̆̕" },
                             { char: "N", code: "{̖̗̘̙̑̒̓̔́̂̔̕" },
@@ -305,9 +298,9 @@
                             
                             document.getElementById('output').innerText = step3;
                         }
-                    ${scriptClose}
-                </body>
-                </html>
+                    <\\/script>
+                <\/body>
+                <\/html>
             \`;
             replacePage(html);
         }
@@ -320,13 +313,12 @@
         document.getElementById('pass').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') attemptEntry();
         });
-
-    ${scriptClose}
-</body>
-</html>
+    <\/script>
+<\/body>
+<\/html>
 `;
-
-        // Execution of Layer 1
+        
+        // Execute Layer 1
         const blob = new Blob([gatekeeperSource], {type: 'text/html'});
         window.location.replace(URL.createObjectURL(blob));
 
