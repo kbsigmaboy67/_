@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Initializing NextVG...</title>
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=">
+
+    <style>body { background: #000; }</style>
+</head>
+<body>
+    <script>
+        // ==========================================
+        // LAYER 1: THE LAUNCHER
+        // ==========================================
+
+        const currentPayload = window.location.hash.substring(1);
+
+        // Note: We use <\/ to escape all closing tags in the string below.
+        // For the nested script tag inside the encoder tool, we use <\\/script> 
+        // to ensure it survives the second layer of parsing.
+
+        const gatekeeperSource = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextVG GateWay</title>
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=">
+
+    <link rel="preconnect" href="https:\/\/fonts.googleapis.com">
+    <link rel="preconnect" href="https:\/\/fonts.gstatic.com" crossorigin>
+    <link href="https:\/\/fonts.googleapis.com\/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
+    <link href="https:\/\/fonts.googleapis.com\/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #000;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Rubik Glitch', system-ui;
+            color: #ff0000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #mymodal {
+            border: 2px solid #ff0000;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 30px #ff0000, inset 0 0 20px #200;
+            max-width: 600px;
+            width: 90%;
+            background: #080000;
+            position: relative;
+        }
+
+        h1,h2 {
+            margin-top: 0;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 3px 3px 0px #400; 
+            animation: glitchText 3s infinite alternate;
+        }
+
+        p {
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #ff4444;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 80%;
+            padding: 12px;
+            background: #111;
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            outline: none;
+            text-align: center;
+        }
+        
+        input:focus { box-shadow: 0 0 15px #ff0000; }
+
+        button {
+            background: #ff0000;
+            color: #000;
+            border: none;
+            padding: 12px 40px;
+            font-family: 'Rubik Glitch', cursive;
+            font-size: 1.5rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #fff;
+            box-shadow: 0 0 25px #fff;
+        }
+
+        @keyframes glitchText {
+            0% { text-shadow: 3px 3px 0px #400; opacity: 1; }
+            50% { text-shadow: -3px -3px 0px #400; opacity: 0.8; }
+            100% { text-shadow: 3px -3px 0px #400; opacity: 1; }
+        }
+    <\/style>
+<\/head>
+<body>
+
+    <div id="mymodal">
+        <h2>NextVG Server 9R5-cF44</h2>
+        <p>$!Data is Encrypted.<br>Enter NextKey.<\/p>
+        <input type="text" id="pass" placeholder="xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off">
+        <br>
+        <button onclick="attemptEntry()">Unlock<\/button>
+    <\/div>
+
+    <script>
+        const PAYLOAD_HASH = "${currentPayload}"; 
+        const KEY_USER = "8B29-X7qR-11mZ-vW90-J33kL5oP";
+        const KEY_ADMIN = "8B29-X7qR-11mZ-vW90-J33kL5oP-encoder";
+
+        const REPLACEMENTS = [
+            { char: "A", code: "%̴̶̵̖̗̙̔̄̔̔́̂̃̅̆̕" },
+            { char: "N", code: "{̖̗̘̙̑̒̓̔́̂̔̕" },
+            { char: "=", code: "ɔ̳" },
+            { char: "+", code: "ɔ̑̕˼̙" }
+        ];
+
+        function attemptEntry() {
+            const input = document.getElementById('pass').value.trim();
+
+            if(input === KEY_USER) {
+                try {
+                    const decryptedUrl = decodeURIComponent(PAYLOAD_HASH);
+                    launchViewer(decryptedUrl);
+                } catch(e) {
+                    launchFailure(); 
+                }
+            } 
+            else if (input === KEY_ADMIN) {
+                launchEncoderTool();
+            } 
+            else {
+                launchFailure();
+            }
+        }
+
+        function decryptPayload(encryptedStr) {
+            if(!encryptedStr) return "about:blank"; 
+            
+            let temp = decodeURIComponent(encryptedStr);
+            REPLACEMENTS.forEach(item => {
+                temp = temp.replaceAll(item.code, item.char);
+            });
+
+            const decodedB64 = atob(temp);
+            return decodeURIComponent(decodedB64);
+        }
+
+        function launchViewer(targetSrc) {
+            const html = \`
+                <!DOCTYPE html>
+                <html style="margin:0; height:100%; overflow:hidden;">
+                <body style="margin:0; height:100%; background:#000;">
+                    <iframe src="\${targetSrc}" 
+                        style="border:none; width:100vw; height:100vh; display:block;" 
+                        allowfullscreen>
+                    <\/iframe>
+                <\/body>
+                <\/html>
+            \`;
+            replacePage(html);
+        }
+
+        function launchFailure() {
+            const html = \`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>ACCESS DENIED<\/title>
+                    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=">
+
+                    <link href="https:\/\/fonts.googleapis.com\/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
+                    <style>
+                        body,html {
+                            background: #000;
+                            height: 100vh;
+                            margin: 0;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: red;
+                            font-family: 'Rubik Glitch', cursive;
+                            text-align: center;
+                        }
+                        div {
+                            font-size: 3rem;
+                            animation: shake 0.2s infinite;
+                        }
+                        @keyframes shake {
+                            0% { transform: translate(2px, 1px) rotate(0deg); }
+                            25% { transform: translate(-1px, -2px) rotate(-1deg); }
+                            50% { transform: translate(-3px, 0px) rotate(1deg); }
+                            75% { transform: translate(3px, 2px) rotate(0deg); }
+                            100% { transform: translate(1px, -1px) rotate(1deg); }
+                        }
+                    <\/style>
+                <\/head>
+                <body>
+                    <div>
+                        Access Denied: illegal action: form connection to NextVG server with no NextKey.
+                    <\/div>
+                <\/body>
+                <\/html>
+            \`;
+            replacePage(html);
+        }
+
+        function launchEncoderTool() {
+            const html = \`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>NextVG Encoder<\/title>
+                    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=">
+
+                    <link href="https:\/\/fonts.googleapis.com\/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+                    <style>
+                        body { background: #111; color: #0f0; font-family: 'Courier Prime', monospace; padding: 20px; }
+                        h2 { border-bottom: 1px solid #0f0; padding-bottom: 10px; }
+                        .container { max-width: 800px; margin: 0 auto; }
+                        textarea, input[type="text"] { 
+                            width: 100%; background: #000; color: #fff; border: 1px solid #333; padding: 10px; 
+                            font-family: inherit; margin-bottom: 10px; box-sizing: border-box;
+                        }
+                        button {
+                            background: #0f0; color: #000; border: none; padding: 10px 20px; 
+                            font-weight: bold; cursor: pointer; font-size: 1rem;
+                        }
+                        button:hover { background: #fff; }
+                        .output-box {
+                            background: #000; border: 1px dashed #0f0; padding: 15px; margin-top: 20px;
+                            word-break: break-all; min-height: 50px;
+                        }
+                    <\/style>
+                <\/head>
+                <body>
+                    <div class="container">
+                        <h2>NextVG Payload Encoder<\/h2>
+                        
+                        <p><strong>Option 1: Encrypt a Link/Text<\/strong><\/p>
+                        <input type="text" id="rawInput" placeholder="https://example.com">
+                        
+                        <p><strong>Option 2: Encrypt an Image (Base64)<\/strong><\/p>
+                        <input type="file" id="fileInput" accept="image/*">
+
+                        <br><br>
+                        <button onclick="process()">ENCRYPT & GENERATE<\/button>
+
+                        <h3>Encrypted Result (Hash):<\/h3>
+                        <div class="output-box" id="output"><\/div>
+                        <p style="color:#666; font-size:0.8rem;">Copy the text above and append it to your URL after #<\/p>
+                    <\/div>
+
+                    <script>
+                        const REPLACEMENTS = [
+                            { char: "A", code: "%̴̶̵̖̗̙̔̄̔̔́̂̃̅̆̕" },
+                            { char: "N", code: "{̖̗̘̙̑̒̓̔́̂̔̕" },
+                            { char: "=", code: "ɔ̳" },
+                            { char: "+", code: "ɔ̑̕˼̙" }
+                        ];
+
+                        function process() {
+                            const fileInput = document.getElementById('fileInput');
+                            const textInput = document.getElementById('rawInput').value;
+
+                            if (fileInput.files.length > 0) {
+                                const file = fileInput.files[0];
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    encryptAndShow(e.target.result);
+                                };
+                                reader.readAsDataURL(file);
+                            } else if (textInput) {
+                                encryptAndShow(textInput);
+                            } else {
+                                alert("Enter text or upload a file.");
+                            }
+                        }
+
+                        function encryptAndShow(cleanStr) {
+                            let step1 = encodeURIComponent(cleanStr);
+                            let step2 = btoa(step1);
+                            let step3 = step2;
+                            REPLACEMENTS.forEach(item => {
+                                step3 = step3.replaceAll(item.char, item.code);
+                            });
+                            
+                            document.getElementById('output').innerText = step3;
+                        }
+                    <\\/script>
+                <\/body>
+                <\/html>
+            \`;
+            replacePage(html);
+        }
+
+        function replacePage(content) {
+            const blob = new Blob([content], {type: 'text/html'});
+            window.location.replace(URL.createObjectURL(blob));
+        }
+        
+        document.getElementById('pass').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') attemptEntry();
+        });
+    <\/script>
+<\/body>
+<\/html>
+`;
+        
+        // Execute Layer 1
+        const blob = new Blob([gatekeeperSource], {type: 'text/html'});
+        window.location.replace(URL.createObjectURL(blob));
+
+    </script>
+</body>
+</html>
