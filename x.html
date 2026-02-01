@@ -48,8 +48,8 @@
 
         const REPS = [
             { char: "A", code: "$" },
-            { char: "N", code: "%" },
-            { char: "=", code: "::" },
+            { char: "N", code: "@" },
+            { char: "=", code: ":" },
             { char: "+", code: "!" }
         ];
 
@@ -59,7 +59,10 @@
                 try {
                     const decryptedUrl = decryptPayload(PAYLOAD_HASH);
                     launchViewer(decryptedUrl);
-                } catch(e) { launchFailure(); }
+                } catch(e) { 
+                    console.error(e);
+                    launchFailure(); 
+                }
             } 
             else if (input === KEY_ADMIN) { launchEncoderTool(); } 
             else { launchFailure(); }
@@ -68,7 +71,12 @@
         function decryptPayload(str) {
             if(!str) return "about:blank"; 
             let temp = decodeURIComponent(str);
-            REPS.forEach(i => temp = temp.replaceAll(i.code, i.char));
+            // Replace codes back to original Base64 chars
+            REPS.forEach(i => {
+                // Escaping special regex chars like $ and !
+                const escapedCode = i.code.replace(/[.*+?^${}()|[\\]\\/]/g, '\\\\$&');
+                temp = temp.replace(new RegExp(escapedCode, 'g'), i.char);
+            });
             return decodeURIComponent(atob(temp));
         }
 
@@ -92,9 +100,8 @@
                         body { background: #111; color: #0f0; font-family: 'Courier Prime', monospace; padding: 20px; }
                         .container { max-width: 800px; margin: 0 auto; }
                         input[type="text"] { width: 100%; background: #000; color: #fff; border: 1px solid #333; padding: 10px; margin-bottom: 10px; }
-                        button { background: #0f0; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; margin-right: 10px; }
-                        #output { background: #000; border: 1px dashed #0f0; padding: 15px; margin-top: 20px; word-break: break-all; color: #fff; max-height: 300px; overflow-y: auto; }
-                        .status { color: #888; font-size: 0.8rem; margin-top: 5px; }
+                        button { background: #0f0; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; margin: 10px 10px 10px 0; }
+                        #output { background: #000; border: 1px dashed #0f0; padding: 15px; margin-top: 20px; word-break: break-all; color: #fff; max-height: 200px; overflow-y: auto; font-size: 0.9rem; }
                     <\/style>
                 <\/head>
                 <body>
@@ -102,17 +109,18 @@
                         <h2>NextVG Payload Encoder<\/h2>
                         <input type="text" id="rawInput" placeholder="URL or Text">
                         <input type="file" id="fileInput" accept="image/*">
-                        <br><br>
+                        <br>
                         <button onclick="process()">GENERATE HASH<\/button>
-                        <button id="copyBtn" style="display:none;" onclick="copyHash()">COPY TO CLIPBOARD<\/button>
+                        <button id="copyBtn" style="display:none;" onclick="copyHash()">COPY HASH<\/button>
+                        <button onclick="location.reload()">CLEAR<\/button>
                         <div id="output"><\/div>
-                        <div id="status" class="status"><\/div>
+                        <div id="status" style="color:#888; font-size:0.8rem; margin-top:5px;"><\/div>
                     <\/div>
                     <script>
                         const REPS = [
                             { char: "A", code: "$" },
-                            { char: "N", code: "%" },
-                            { char: "=", code: "::" },
+                            { char: "N", code: "@" },
+                            { char: "=", code: ":" },
                             { char: "+", code: "!" }
                         ];
                         let currentHash = "";
@@ -128,8 +136,12 @@
                         }
 
                         function encode(s) {
+                            if(!s) return;
                             let res = btoa(encodeURIComponent(s));
-                            REPS.forEach(i => res = res.replaceAll(i.char, i.code));
+                            REPS.forEach(i => {
+                                // Simple global replace for the new characters
+                                res = res.split(i.char).join(i.code);
+                            });
                             currentHash = res;
                             
                             const out = document.getElementById('output');
@@ -138,18 +150,17 @@
                             
                             if(res.length > 1000) {
                                 out.innerText = "[HASH TOO LARGE TO DISPLAY - USE COPY BUTTON]";
-                                document.getElementById('status').innerText = "Length: " + res.length + " chars";
                             } else {
                                 out.innerText = res;
-                                document.getElementById('status').innerText = "";
                             }
+                            document.getElementById('status').innerText = "Length: " + res.length + " chars";
                         }
 
                         function copyHash() {
                             navigator.clipboard.writeText(currentHash).then(() => {
                                 const b = document.getElementById('copyBtn');
                                 b.innerText = "COPIED!";
-                                setTimeout(() => b.innerText = "COPY TO CLIPBOARD", 2000);
+                                setTimeout(() => b.innerText = "COPY HASH", 2000);
                             });
                         }
                     <\\/script>
