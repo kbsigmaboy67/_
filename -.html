@@ -139,7 +139,7 @@
 
             if(input === KEY_USER) {
                 try {
-                    const decryptedUrl = decryptPayload(PAYLOAD_HASH);
+                    const decryptedUrl = decodeURIComponent(PAYLOAD_HASH);
                     launchViewer(decryptedUrl);
                 } catch(e) {
                     launchFailure(); 
