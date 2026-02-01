@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Initializing NextVG...</title>
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=">
+    <style>body { background: #000; }</style>
+</head>
+<body>
+    <script>
+        const currentPayload = window.location.hash.substring(1);
+
+        const gatekeeperSource = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextVG GateWay</title>
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=">
+    <link rel="preconnect" href="https:\/\/fonts.googleapis.com">
+    <link rel="preconnect" href="https:\/\/fonts.gstatic.com" crossorigin>
+    <link href="https:\/\/fonts.googleapis.com\/css2?family=Rubik+Glitch&display=swap" rel="stylesheet">
+    <link href="https:\/\/fonts.googleapis.com\/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #000; margin: 0; overflow: hidden; font-family: 'Rubik Glitch', system-ui; color: #ff0000; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #mymodal { border: 2px solid #ff0000; padding: 40px; text-align: center; box-shadow: 0 0 30px #ff0000, inset 0 0 20px #200; max-width: 600px; width: 90%; background: #080000; position: relative; }
+        h2 { margin-top: 0; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 4px; text-shadow: 3px 3px 0px #400; animation: glitchText 3s infinite alternate; }
+        p { font-family: 'Courier Prime', monospace; font-weight: bold; font-size: 1rem; color: #ff4444; margin-bottom: 25px; }
+        input { width: 80%; padding: 12px; background: #111; border: 1px solid #ff0000; color: #ff0000; font-family: 'Courier Prime', monospace; font-size: 1.1rem; margin-bottom: 20px; outline: none; text-align: center; }
+        button { background: #ff0000; color: #000; border: none; padding: 12px 40px; font-family: 'Rubik Glitch', cursive; font-size: 1.5rem; cursor: pointer; text-transform: uppercase; }
+        @keyframes glitchText { 0% { text-shadow: 3px 3px 0px #400; } 100% { text-shadow: -3px -3px 0px #400; } }
+    <\/style>
+<\/head>
+<body>
+    <div id="mymodal">
+        <h2>NextVG Server 9R5-cF44<\/h2>
+        <p>$!Data is Encrypted.<br>Enter NextKey.<\/p>
+        <input type="text" id="pass" placeholder="xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off">
+        <br>
+        <button onclick="attemptEntry()">Unlock<\/button>
+    <\/div>
+
+    <script>
+        const PAYLOAD_HASH = "${currentPayload}"; 
+        const KEY_USER = "8B29-X7qR-11mZ-vW90-J33kL5oP";
+        const KEY_ADMIN = "8B29-X7qR-11mZ-vW90-J33kL5oP-encoder";
+
+        const REPS = [
+            { char: "A", code: "$" },
+            { char: "N", code: "@" },
+            { char: "=", code: ":" },
+            { char: "+", code: "!" }
+        ];
+
+        function attemptEntry() {
+            const input = document.getElementById('pass').value.trim();
+            if(input === KEY_USER) {
+                try {
+                    const decryptedUrl = decryptPayload(PAYLOAD_HASH);
+                    launchViewer(decryptedUrl);
+                } catch(e) { 
+                    console.error(e);
+                    launchFailure(); 
+                }
+            } 
+            else if (input === KEY_ADMIN) { launchEncoderTool(); } 
+            else { launchFailure(); }
+        }
+
+        function decryptPayload(str) {
+            if(!str) return "about:blank"; 
+            let temp = decodeURIComponent(str);
+            // Replace codes back to original Base64 chars
+            REPS.forEach(i => {
+                // Escaping special regex chars like $ and !
+                const escapedCode = i.code.replace(/[.*+?^${}()|[\\]\\/]/g, '\\\\$&');
+                temp = temp.replace(new RegExp(escapedCode, 'g'), i.char);
+            });
+            return decodeURIComponent(atob(temp));
+        }
+
+        function launchViewer(src) {
+            const html = \`<!DOCTYPE html><html style="margin:0;height:100%;overflow:hidden;"><body style="margin:0;height:100%;background:#000;"><iframe src="\${src}" style="border:none;width:100vw;height:100vh;display:block;" allowfullscreen><\/iframe><\/body><\/html>\`;
+            replacePage(html);
+        }
+
+        function launchFailure() {
+            const html = \`<!DOCTYPE html><html><head><style>body{background:#000;height:100vh;display:flex;justify-content:center;align-items:center;color:red;font-family:'Rubik Glitch',cursive;text-align:center;overflow:hidden;}div{font-size:3rem;animation:shake 0.2s infinite;}@keyframes shake{0%{transform:translate(2px,1px);}50%{transform:translate(-3px,0px);}100%{transform:translate(1px,-1px);}}<\/style><\/head><body><div>Access Denied<\/div><\/body><\/html>\`;
+            replacePage(html);
+        }
+
+        function launchEncoderTool() {
+            const html = \`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>NextVG Encoder<\/title>
+                    <style>
+                        body { background: #111; color: #0f0; font-family: 'Courier Prime', monospace; padding: 20px; }
+                        .container { max-width: 800px; margin: 0 auto; }
+                        input[type="text"] { width: 100%; background: #000; color: #fff; border: 1px solid #333; padding: 10px; margin-bottom: 10px; }
+                        button { background: #0f0; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; margin: 10px 10px 10px 0; }
+                        #output { background: #000; border: 1px dashed #0f0; padding: 15px; margin-top: 20px; word-break: break-all; color: #fff; max-height: 200px; overflow-y: auto; font-size: 0.9rem; }
+                    <\/style>
+                <\/head>
+                <body>
+                    <div class="container">
+                        <h2>NextVG Payload Encoder<\/h2>
+                        <input type="text" id="rawInput" placeholder="URL or Text">
+                        <input type="file" id="fileInput" accept="image/*">
+                        <br>
+                        <button onclick="process()">GENERATE HASH<\/button>
+                        <button id="copyBtn" style="display:none;" onclick="copyHash()">COPY HASH<\/button>
+                        <button onclick="location.reload()">CLEAR<\/button>
+                        <div id="output"><\/div>
+                        <div id="status" style="color:#888; font-size:0.8rem; margin-top:5px;"><\/div>
+                    <\/div>
+                    <script>
+                        const REPS = [
+                            { char: "A", code: "$" },
+                            { char: "N", code: "@" },
+                            { char: "=", code: ":" },
+                            { char: "+", code: "!" }
+                        ];
+                        let currentHash = "";
+
+                        function process() {
+                            const f = document.getElementById('fileInput');
+                            const t = document.getElementById('rawInput').value;
+                            if (f.files.length > 0) {
+                                const r = new FileReader();
+                                r.onload = (e) => encode(e.target.result);
+                                r.readAsDataURL(f.files[0]);
+                            } else { encode(t); }
+                        }
+
+                        function encode(s) {
+                            if(!s) return;
+                            let res = btoa(encodeURIComponent(s));
+                            REPS.forEach(i => {
+                                // Simple global replace for the new characters
+                                res = res.split(i.char).join(i.code);
+                            });
+                            currentHash = res;
+                            
+                            const out = document.getElementById('output');
+                            const btn = document.getElementById('copyBtn');
+                            btn.style.display = "inline-block";
+                            
+                            if(res.length > 1000) {
+                                out.innerText = "[HASH TOO LARGE TO DISPLAY - USE COPY BUTTON]";
+                            } else {
+                                out.innerText = res;
+                            }
+                            document.getElementById('status').innerText = "Length: " + res.length + " chars";
+                        }
+
+                        function copyHash() {
+                            navigator.clipboard.writeText(currentHash).then(() => {
+                                const b = document.getElementById('copyBtn');
+                                b.innerText = "COPIED!";
+                                setTimeout(() => b.innerText = "COPY HASH", 2000);
+                            });
+                        }
+                    <\\/script>
+                <\/body>
+                <\/html>\`;
+            replacePage(html);
+        }
+
+        function replacePage(c) {
+            const b = new Blob([c], {type: 'text/html'});
+            window.location.replace(URL.createObjectURL(b));
+        }
+
+        document.getElementById('pass').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') attemptEntry();
+        });
+    <\/script>
+<\/body>
+<\/html>
+`;
+        const blob = new Blob([gatekeeperSource], {type: 'text/html'});
+        window.location.replace(URL.createObjectURL(blob));
+    </script>
+</body>
+</html>
